@@ -1,94 +1,68 @@
-import { Box, SelectChangeEvent } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Box, SelectChangeEvent, Tooltip, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { Context, generateRandomColor, SelectInput } from "./Dashboard.tsx";
-import { Legend, RadialBar, RadialBarChart } from "recharts";
-const style = {
-  top: 0,
-  left: 30,
-  lineHeight: "24px",
-};
-
-export default function App() {
-  const vehiclesData: any = useContext(Context);
-
-  const [chartData, setChartData] = useState<any>([]);
-  const [selectedYear, setSelectedYear] = useState(1998);
-
+import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
+import { Context, higestChartData, VehicleData } from "../utils/utils.tsx";
+import { CustomMakes, SelectInput } from "./CommonComponents.tsx";
+import { styles } from "./styles.ts";
+interface IState {
+  selectedYear: number;
+}
+const RadioBarChart = () => {
+  const vehiclesData: VehicleData[] | null = useContext(Context);
+  const [chartData, setChartData] = useState<VehicleData[] | []>([]);
+  const [selectedYear, setSelectedYear] =
+    useState<IState["selectedYear"]>(2024);
   const handleSelectYear = (event: SelectChangeEvent) => {
     const value = event.target.value;
-    setSelectedYear(+value || 1998);
+    setSelectedYear(+value);
   };
 
   useEffect(() => {
-    const filterData =
-      vehiclesData?.filter((vehicle) => {
-        const modelYear = vehicle["Model Year"] ?? "";
-        return +modelYear === selectedYear;
-      }) || [];
-
-    const chartData =
-      filterData.map((vehicle: any) => ({
-        name: vehicle.Make,
-        electricRange: vehicle["Electric Range"] || 0,
-        fill: generateRandomColor(),
-      })) || [];
-
-    const higherData: any =
-      Object.values(
-        chartData.reduce((acc, item) => {
-          if (!item || !item.name || item.electricRange == null) {
-            return acc;
-          }
-          const electricRangeValue = parseFloat(item.electricRange);
-          if (isNaN(electricRangeValue)) {
-            return acc;
-          }
-          if (
-            !acc[item.name] ||
-            electricRangeValue > parseFloat(acc[item.name].electricRange)
-          ) {
-            acc[item.name] = {
-              ...item,
-              electricRange: electricRangeValue.toString(),
-            };
-          }
-          return acc;
-        }, {}) || {}
-      ) || [];
-
-    setChartData(higherData.slice(0, 10));
+    setChartData(
+      higestChartData({
+        vehiclesData: vehiclesData,
+        selectedYear: selectedYear,
+        itemName: "Make",
+      })
+    );
   }, [vehiclesData, selectedYear]);
 
   return (
-    <Box>
-      <SelectInput
-        selectedYear={selectedYear}
-        handleSelectYear={handleSelectYear}
-      />
-      <RadialBarChart
-        width={900}
-        height={300}
-        cx="50%"
-        cy="50%"
-        innerRadius="10%"
-        outerRadius="80%"
-        barSize={40}
-        data={chartData}
-      >
-        <RadialBar
-          minAngle={15}
-          label={{ position: "insideStart", fill: "white", fontSize: "10px" }}
-          background
-          clockWise
-          dataKey="electricRange"
+    <Box sx={styles.chartMainBox}>
+      <Typography sx={styles.chartHeading}>
+        Top Electric Vehicle Makes by Range
+      </Typography>
+      <Box sx={styles.tooltip}>
+        <Tooltip title="Filter the Top Electric Vehicle Makes by Model Year">
+          <InfoOutlinedIcon />
+        </Tooltip>
+        <SelectInput
+          selectedYear={selectedYear}
+          handleSelectYear={handleSelectYear}
+          isNeedDefault={false}
         />
-        <Legend
-          iconSize={20}
-          layout="vertical"
-          verticalAlign="middle"
-          wrapperStyle={style}
-        />
-      </RadialBarChart>
+      </Box>
+      <ResponsiveContainer width="100%" height="80%">
+        <RadialBarChart
+          cx="50%"
+          cy="50%"
+          innerRadius="10%"
+          outerRadius="80%"
+          barSize={40}
+          data={chartData}
+        >
+          <RadialBar
+            minAngle={15}
+            label={{ position: "insideStart", fill: "white", fontSize: "10px" }}
+            background
+            clockWise
+            dataKey="electricRange"
+          />
+        </RadialBarChart>
+      </ResponsiveContainer>
+      <CustomMakes chartData={chartData} />
     </Box>
   );
-}
+};
+export default RadioBarChart;
