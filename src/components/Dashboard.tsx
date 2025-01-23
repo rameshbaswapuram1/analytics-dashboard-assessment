@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import Papa from "papaparse";
 import React, { useEffect, useState } from "react";
-import { loaderImage, logo } from "../assets/assets.ts";
+import { loaderImage } from "../assets/assets.ts";
 import file from "../data-to-visualize/Electric_Vehicle_Population_Data.csv";
 import { Context, theme, VehicleData } from "../utils/utils.tsx";
 import BarLineChart from "./BarLineChart.tsx";
@@ -17,7 +17,6 @@ import DotLineChart from "./DotLineChart.tsx";
 import RadioBarChart from "./RadioBarChart.tsx";
 import { styles } from "./styles.ts";
 import VehicleTable from "./VehicleTable.tsx";
-
 
 interface IState {
   scrollY: number;
@@ -79,12 +78,7 @@ function CsvComponent() {
           <>
             <Box sx={styles.header(90 < scrollY)}>
               <Container sx={styles.container}>
-                <Box
-                  component={"img"}
-                  loading="lazy"
-                  src={logo}
-                  sx={styles.logo}
-                />
+                <Typography sx={styles.mainLogo}>Logo</Typography>
                 <Box>
                   <Typography sx={styles.name}>Dashboard</Typography>
                 </Box>
@@ -108,7 +102,7 @@ function CsvComponent() {
                   </Grid2>
                 </Grid2>
                 <Typography sx={styles.title}>
-                 Electric vehicles table
+                  Electric vehicles table
                 </Typography>
                 <VehicleTable />
               </Container>

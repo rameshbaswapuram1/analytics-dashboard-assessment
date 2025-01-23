@@ -1,5 +1,6 @@
 export const styles = {
-  loadingImageBox:{ width: "100%", height: "100vh", overflow: "hidden" },
+  mainLogo: { fontWeight: 700, fontSize: 30, color: "white" },
+  loadingImageBox: { width: "100%", height: "100vh", overflow: "hidden" },
   loadingImage: {
     height: "100%",
     width: "100%",
